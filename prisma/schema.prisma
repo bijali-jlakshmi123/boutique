@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum ServiceType {
+  MEHENDI
+  STITCHING
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderStatus {
+  CUTTING
+  STITCHING
+  TRIAL
+  READY
+  DELIVERED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+}
+
+model MehendiDesign {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  price       Float?
+  category    String? // e.g., Bridal, Arabic, Simple
+  createdAt   DateTime @default(now())
+}
+
+model Appointment {
+  id              String         @id @default(cuid())
+  customerName    String
+  customerPhone   String
+  designId        String?
+  appointmentDate DateTime
+  timeSlot        String
+  status          BookingStatus  @default(PENDING)
+  notes           String?
+  createdAt       DateTime       @default(now())
+}
+
+model StitchingOrder {
+  id              String         @id @default(cuid())
+  customerName    String
+  customerPhone   String
+  dressType       String
+  measurements    Json?
+  referenceImage  String?
+  status          OrderStatus    @default(CUTTING)
+  trialScheduled  DateTime?
+  deliveryDate    DateTime?
+  totalAmount     Float?
+  advancePaid     Float?
+  orderDate       DateTime       @default(now())
+}
+
+model Measurement {
+  id            String   @id @default(cuid())
+  customerName  String
+  customerPhone String   @unique
+  bust          Float?
+  waist         Float?
+  hips          Float?
+  length        Float?
+  shoulder      Float?
+  sleeves       Float?
+  neck          Float?
+  other         Json?
+  updatedAt     DateTime @updatedAt
+}
+
+model ServicePackage {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  type        ServiceType
+  createdAt   DateTime @default(now())
+}
